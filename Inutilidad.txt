@@ -1,0 +1,120 @@
+	void sprite			(int,int,int,int,int);					//(sprite ptr, Bitmap width, Bitmap height, x pos, y pos)
+	void sprite_sheet	(int,int,int,int,int,int);				//(sprite ptr, Bitmap width, Bitmap height, x pos, y pos, image index)
+
+/*void sprite	(int spr, int x, int y, int w, int h)
+	{
+		__asm{
+			mov edi, surf	//En EDI pasamos la direccion de memoria de la imagen .bmp en la que vamos a dibujar
+			mov esi, spr
+
+			mov eax, 4
+			mul x
+			add edi, eax
+
+			mov eax, 4*900
+			mul y
+			add edi, eax
+
+			mov ecx, h	//"alto"A ECX le damos el tamaño de la imagen en pixeles para recorrerla completa en un loop
+
+		lazo2:
+			push ecx
+			mov ecx, w //"ancho"
+
+		lazo:
+			cmp edi,surf
+			jl alpha
+				mov eax, [esi]
+				cmp eax, 0x000080ff
+			je alpha
+				cmp eax, 0xff0080ff
+			je alpha
+				add eax,excolor
+
+			//Shader Inversion de Color
+			ADD EAX, 0xFFFFFFFF
+
+				mov [edi], eax		//Copiamos el color de EAX a la direccion de memoria a la que apunta EDI (pixel actual)
+			alpha:
+			add edi, 4			//Movemos 4 bytes EDI para recorrer el tamaño de un pixel
+			add esi, 4
+		loop lazo
+			mov eax, 900
+			sub eax, w
+			shl eax, 2
+			add edi, eax
+			pop ecx
+		loop lazo2
+		}
+}*/
+
+void sprite_sheet(int spr, int x, int y, int w, int h,int index)
+	{
+		__asm{
+			mov edi, surf	//En EDI pasamos la direccion de memoria de la imagen .bmp en la que vamos a dibujar
+			mov esi, spr
+
+			mov eax,y
+			add eax,h
+			cmp eax,600
+			jng excessy
+				mov ebx,h
+				sub y,ebx
+			excessy:
+			mov eax, 4
+			mul x
+			add edi, eax
+			mov eax, 4*900
+			mul y
+			add edi, eax
+			mov eax,h
+			mul index
+			mov ebx,eax
+			mov eax,4
+			mul ebx
+			mul w
+			add esi ,eax
+			mov ecx, h
+		lazo2:
+			push ecx
+			mov ecx, w
+
+		lazo:
+			cmp edi,surf
+			jl alpha
+				mov eax, [esi]
+				cmp eax, 0x000080ff
+			je alpha
+				cmp eax, 0xff0080ff
+			je alpha
+				add eax,excolor
+				mov [edi], eax
+			alpha:
+			add edi, 4
+			add esi, 4
+		loop lazo
+			mov eax, 900
+			sub eax, w
+			shl eax, 2
+			add edi, eax
+			pop ecx
+		loop lazo2
+		}
+	};
+
+	
+//codigo1
+			/*JNL ENDPIC
+				MOV EAX,x		//Tamaño del pixel
+				MUL iw			//Lo multiplica por el ancho
+				MUL ih			//y el largo
+				ADD EAX,spr		//despues se lo añade al primer pixel del 
+				CMP ESI,EAX		*/
+//codigo 2 //respaldo
+			/*mov ebx, 900
+			mov eax, w
+			mul scale
+			sub ebx, eax
+			mov eax, ebx
+			shl eax, 2
+			add edi, eax*/
